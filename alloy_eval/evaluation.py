@@ -25,7 +25,7 @@ def create_alloy_file(
 {problem.signatures}
 
 /* {problem.prompt}*/
-{problem.function_signature}\t{solution}
+{problem.predicate_signature}\t{solution}
 }}
 
 {problem.check}

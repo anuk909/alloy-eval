@@ -101,8 +101,10 @@ class OpenAITester:
 
         Please complete this predicate implementation:
         ```alloy
-        {problem.function_signature}
-        ```
+        {problem.predicate_signature}
+        ```           
+
+        Output only the inner implemenation of the predicate in the required format for AlloyPred.          
         """
 
         return prompt

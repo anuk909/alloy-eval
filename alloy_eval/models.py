@@ -8,7 +8,7 @@ class AlloyProblem(BaseModel):
     task_id: str
     prompt: str
     signatures: str
-    function_signature: str
+    predicate_signature: str
     check: str
     canonical_solution: Optional[str] = None
 
