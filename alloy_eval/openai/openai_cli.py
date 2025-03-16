@@ -1,10 +1,7 @@
-#!/usr/bin/env python3
-"""Command-line interface for OpenAI-based Alloy testing."""
-
 import argparse
 from enum import Enum
 
-from alloy_eval.openai_tester import OpenAITester
+from alloy_eval.openai.openai_tester import OpenAITester
 
 
 class Mode(Enum):

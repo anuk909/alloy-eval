@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Any, List
+from typing import Any
 from .models import AlloyProblem
 
 
@@ -20,7 +20,7 @@ def write_jsonl(path: str | Path, data: list[dict[str, Any]]) -> None:
             f.write(json.dumps(item) + "\n")
 
 
-def read_problems(file_path: str | Path) -> List[AlloyProblem]:
+def read_problems(file_path: str | Path) -> list[AlloyProblem]:
     """Read problems from a JSONL file."""
     problems = []
     with open(file_path) as f:

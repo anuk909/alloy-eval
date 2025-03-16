@@ -1,5 +1,3 @@
-"""Utility functions for AlloyEval."""
-
 from pathlib import Path
 import shutil
 from typing import Any, Sequence
