@@ -137,7 +137,3 @@ This makes it easy to:
 - Inspect failed solutions
 - Manually run specific test cases
 - Modify and experiment with solutions
-
-## License
-
-MIT License
