@@ -1,0 +1,5 @@
+===== Alloy OpenAI Testing Report =====
+Model: gpt-4o
+Total problems: 8
+Tests passed: 6
+Success rate: 75.00%

@@ -11,10 +11,10 @@
     },
     {
       "task_id": "graph/oriented",
-      "passed": false,
+      "passed": true,
       "solution": "all n, m: Node | n in m.adj implies m not in n.adj",
       "details": "",
-      "error_message": "Counterexample found",
+      "error_message": null,
       "debug_file": "gpt-4o-graph/graph_oriented.als"
     },
     {
@@ -60,7 +60,7 @@
     {
       "task_id": "graph/transitive",
       "passed": false,
-      "solution": "all n1, n2, n3: Node | (n1.adj & n2.adj) in n3.adj implies n1 in n3.adj",
+      "solution": "all n1, n2, n3: Node | (n1.adj & n2.adj != none and n2.adj & n3.adj != none) implies n1 in n3.adj",
       "details": "",
       "error_message": "Counterexample found",
       "debug_file": "gpt-4o-graph/graph_transitive.als"
