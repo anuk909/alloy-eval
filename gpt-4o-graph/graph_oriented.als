@@ -1,10 +1,13 @@
 /* Problem: graph/oriented */
 
-sig Node { adj : set Node }
+sig Node {adj : set Node}
 
-/* Create an Alloy predicate 'oriented' that checks if a graph is oriented, meaning it contains no symmetric edges (if there's an edge from node A to node B, there cannot be an edge from B to A).*/
+/* 
+The graph is oriented, ie, contains no symmetric edges.
+http://mathworld.wolfram.com/OrientedGraph.html
+*/
 pred oriented {
-	all n, m: Node | n in m.adj implies m not in n.adj
+	all n: Node, m: n.adj | m not in n.adj
 }
 
 check oriented {

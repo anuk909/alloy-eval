@@ -1,10 +1,13 @@
 /* Problem: graph/transitive */
 
-sig Node { adj : set Node }
+sig Node {adj : set Node}
 
-/* Create an Alloy predicate 'transitive' that checks if a directed graph is transitive, meaning if two nodes are connected through a third node, they also are connected directly.*/
+/* 
+The graph is transitive, ie, if two nodes are connected through a third node, they also are connected directly.
+http://mathworld.wolfram.com/TransitiveDigraph.html
+*/
 pred transitive {
-	all n1, n2, n3: Node | (n1.adj & n2.adj != none and n2.adj & n3.adj != none) implies n1 in n3.adj
+	all n1, n2, n3: Node | (n1 in n2.adj and n2 in n3.adj) implies n1 in n3.adj
 }
 
 check transitive {

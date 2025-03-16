@@ -1,8 +1,11 @@
 /* Problem: graph/complete */
 
-sig Node { adj : set Node }
+sig Node {adj : set Node}
 
-/* Create an Alloy predicate 'complete' that checks if a directed graph is complete, meaning every node has edges to all other nodes.*/
+/* 
+The graph is complete, ie, every node is connected to every other node.
+http://mathworld.wolfram.com/CompleteDigraph.html
+*/
 pred complete {
 	all n: Node | n.adj = Node - n
 }

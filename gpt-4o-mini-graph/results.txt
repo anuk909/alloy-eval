@@ -4,7 +4,7 @@
     {
       "task_id": "graph/undirected",
       "passed": true,
-      "solution": "all n1, n2 : Node | (n2 in n1.adj) implies (n1 in n2.adj)",
+      "solution": "all n1, n2 : Node | n2 in n1.adj implies n1 in n2.adj",
       "details": "",
       "error_message": null,
       "debug_file": "gpt-4o-mini-graph/graph_undirected.als"
@@ -12,7 +12,7 @@
     {
       "task_id": "graph/oriented",
       "passed": true,
-      "solution": "all n1, n2: Node | (n1 in n2.adj) implies (n2 not in n1.adj)",
+      "solution": "all n1, n2: Node | n1 in n2.adj implies n2 not in n1.adj",
       "details": "",
       "error_message": null,
       "debug_file": "gpt-4o-mini-graph/graph_oriented.als"
@@ -20,7 +20,7 @@
     {
       "task_id": "graph/acyclic",
       "passed": false,
-      "solution": "no Node | (this in Node.adj) // Ensure no node points to itself\n    all n: Node | no n.adj & (n in Node) // No node has a path back to itself\n    all n: Node | no n.adj & (n in Node.adj) // No node is reachable from itself through its adjacency",
+      "solution": "all n: Node | no n.adj & (n in n.adj)",
       "details": "",
       "error_message": "Counterexample found",
       "debug_file": "gpt-4o-mini-graph/graph_acyclic.als"
@@ -28,7 +28,7 @@
     {
       "task_id": "graph/complete",
       "passed": false,
-      "solution": "all n1, n2: Node | n1 != n2 implies n1.adj = n2 + n1.adj",
+      "solution": "all n1, n2: Node | n1 != n2 implies n1.adj = n2 + n1",
       "details": "",
       "error_message": "Counterexample found",
       "debug_file": "gpt-4o-mini-graph/graph_complete.als"
@@ -36,7 +36,7 @@
     {
       "task_id": "graph/noLoops",
       "passed": true,
-      "solution": "all n: Node | n !in n.adj",
+      "solution": "all n : Node | n !in n.adj",
       "details": "",
       "error_message": null,
       "debug_file": "gpt-4o-mini-graph/graph_noLoops.als"
@@ -44,7 +44,7 @@
     {
       "task_id": "graph/weaklyConnected",
       "passed": false,
-      "solution": "all n1, n2: Node | n1 in n2.*adj or n2 in n1.*adj",
+      "solution": "let reachable = {n: Node | some path: Node -> Node | path in n.adj} | all n: Node | reachable in n.adj",
       "details": "",
       "error_message": "Counterexample found",
       "debug_file": "gpt-4o-mini-graph/graph_weaklyConnected.als"
@@ -52,7 +52,7 @@
     {
       "task_id": "graph/stronglyConnected",
       "passed": false,
-      "solution": "all n1, n2: Node | n1 in n2.^adj and n2 in n1.^adj",
+      "solution": "all n1, n2: Node | n1 in n2.adj implies (n2 in n1.adj or (some n3: Node | n2 in n3.adj and n1 in n3.adj))",
       "details": "",
       "error_message": "Counterexample found",
       "debug_file": "gpt-4o-mini-graph/graph_stronglyConnected.als"

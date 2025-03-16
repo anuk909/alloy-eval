@@ -1,8 +1,11 @@
 /* Problem: graph/acyclic */
 
-sig Node { adj : set Node }
+sig Node {adj : set Node}
 
-/* Create an Alloy predicate 'acyclic' that checks if a directed graph contains no cycles.*/
+/* 
+The graph is acyclic, ie, contains no directed cycles.
+http://mathworld.wolfram.com/AcyclicDigraph.html
+*/
 pred acyclic {
 	all n: Node | n !in n.^adj
 }

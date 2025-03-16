@@ -11,10 +11,10 @@
     },
     {
       "task_id": "graph/oriented",
-      "passed": true,
-      "solution": "all n, m: Node | n in m.adj implies m not in n.adj",
+      "passed": false,
+      "solution": "all n: Node, m: n.adj | m not in n.adj",
       "details": "",
-      "error_message": null,
+      "error_message": "Counterexample found",
       "debug_file": "gpt-4o-graph/graph_oriented.als"
     },
     {
@@ -43,26 +43,26 @@
     },
     {
       "task_id": "graph/weaklyConnected",
-      "passed": false,
-      "solution": "all n: Node | n in (n.*(adj + ~adj))",
+      "passed": true,
+      "solution": "all n1, n2: Node | n1 in n2.*(adj + ~adj)",
       "details": "",
-      "error_message": "Counterexample found",
+      "error_message": null,
       "debug_file": "gpt-4o-graph/graph_weaklyConnected.als"
     },
     {
       "task_id": "graph/stronglyConnected",
       "passed": true,
-      "solution": "all n, m: Node | n in m.*adj",
+      "solution": "all n1, n2: Node | n1 in n2.*adj",
       "details": "",
       "error_message": null,
       "debug_file": "gpt-4o-graph/graph_stronglyConnected.als"
     },
     {
       "task_id": "graph/transitive",
-      "passed": false,
-      "solution": "all n1, n2, n3: Node | (n1.adj & n2.adj != none and n2.adj & n3.adj != none) implies n1 in n3.adj",
+      "passed": true,
+      "solution": "all n1, n2, n3: Node | (n1 in n2.adj and n2 in n3.adj) implies n1 in n3.adj",
       "details": "",
-      "error_message": "Counterexample found",
+      "error_message": null,
       "debug_file": "gpt-4o-graph/graph_transitive.als"
     }
   ]

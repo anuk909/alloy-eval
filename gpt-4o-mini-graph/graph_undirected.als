@@ -1,10 +1,13 @@
 /* Problem: graph/undirected */
 
-sig Node { adj : set Node }
+sig Node {adj : set Node}
 
-/* Create an Alloy predicate 'undirected' that checks if a graph is undirected, meaning edges are symmetric (if there's an edge from node A to node B, there must also be an edge from B to A).*/
+/* 
+The graph is undirected, ie, edges are symmetric.
+http://mathworld.wolfram.com/UndirectedGraph.html
+*/
 pred undirected {
-	all n1, n2 : Node | (n2 in n1.adj) implies (n1 in n2.adj)
+	all n1, n2 : Node | n2 in n1.adj implies n1 in n2.adj
 }
 
 check undirected {

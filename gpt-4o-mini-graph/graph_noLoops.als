@@ -1,10 +1,13 @@
 /* Problem: graph/noLoops */
 
-sig Node { adj : set Node }
+sig Node {adj : set Node}
 
-/* Create an Alloy predicate 'noLoops' that checks if a graph contains no loops (nodes have no transitions to themselves).*/
+/* 
+The graph contains no loops, ie, nodes have no transitions to themselves.
+http://mathworld.wolfram.com/GraphLoop.html
+*/
 pred noLoops {
-	all n: Node | n !in n.adj
+	all n : Node | n !in n.adj
 }
 
 check noLoops {
