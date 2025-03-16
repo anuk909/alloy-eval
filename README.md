@@ -94,7 +94,7 @@ Each problem in AlloyEval follows this structure:
     "task_id": "unique_identifier",
     "prompt": "Natural language description of the task",
     "signatures": "Alloy signature and type definitions",
-    "function_signature": "Predicate signature to implement",
+    "predicate_signature": "Predicate signature to implement",
     "check": "Assertions to verify the solution"
 }
 ```
