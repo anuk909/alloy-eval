@@ -1,51 +1,14 @@
-"""OpenAI-based testing module for Alloy specifications."""
-
-import os
-import re
 import json
+import re
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
-from openai import OpenAI
-from rich.progress import track
-from dotenv import load_dotenv
-
-from alloy_eval.evaluation import evaluate_single_problem
-from alloy_eval.models import AlloyPred, EvaluationResult, AlloyProblem
 from alloy_eval.data_utils import read_problems
-from alloy_eval.utils import console, generate_report, setup_debug_dir
-
-
-# Load environment variables
-load_dotenv()
-
-
-class OpenAIClient:
-    def __init__(self, api_key: str, model: str, temperature: float):
-        self.client = OpenAI(api_key=api_key)
-        self.model = model
-        self.temperature = temperature
-
-    def query(self, prompt: str) -> Optional[str]:
-        """Query OpenAI API with structured response."""
-        try:
-            response = self.client.beta.chat.completions.parse(
-                model=self.model,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You are an expert in formal methods and the Alloy specification language. Complete the Alloy predicate implementation in one line.",
-                    },
-                    {"role": "user", "content": prompt},
-                ],
-                temperature=self.temperature,
-                max_tokens=512,
-                response_format=AlloyPred,
-            )
-            return response.choices[0].message.parsed.content
-        except Exception as e:
-            print(f"Error querying OpenAI API: {e}")
-            return None
+from alloy_eval.evaluation import evaluate_single_problem
+from alloy_eval.models import AlloyProblem, EvaluationResult
+from alloy_eval.openai.openai_client import OpenAIClient
+from alloy_eval.ui_utils import console, generate_report, setup_debug_dir
+from rich.progress import track
 
 
 class OpenAITester:
@@ -66,7 +29,7 @@ class OpenAITester:
         model: str,
         alloy_path: str,
         temperature: float,
-        debug_dir: Optional[str | Path] = None,
+        debug_dir: str | Path | None = None,
     ) -> None:
         """
         Initialize the tester.
@@ -82,7 +45,6 @@ class OpenAITester:
         self.alloy_path = alloy_path
         self.debug_dir = setup_debug_dir(debug_dir)
         self.client = OpenAIClient(
-            api_key=os.getenv("OPENAI_API_KEY", ""),
             model=model,
             temperature=temperature,
         )

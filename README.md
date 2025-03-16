@@ -34,7 +34,7 @@ The quickest way to evaluate GPT on the graph benchmark:
 export OPENAI_API_KEY=your_api_key
 
 # Run the evaluation
-test_alloy_openai \
+eval_alloy_openai \
     --problems-file data/alloy_graph_benchmark.jsonl \
     --alloy-path /path/to/alloy \
     --model gpt-4o-mini \

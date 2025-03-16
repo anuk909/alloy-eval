@@ -18,7 +18,8 @@ setup(
     author="Shmulik Cohen",
     entry_points={
         "console_scripts": [
-            "test_alloy_openai=alloy_eval.openai_cli:main",
+            "eval_alloy_openai=alloy_eval.openai.openai_cli:main",
+            "eval_alloy=alloy_eval.cli:main",
         ],
     },
 )
