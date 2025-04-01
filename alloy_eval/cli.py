@@ -10,7 +10,7 @@ def evaluate_samples(
     samples_path: str | Path,
     alloy_path: str | Path,
     problems_file: str | Path | None = None,
-) -> dict[str, float]:
+) -> dict:
     """
     Evaluate a collection of samples from a JSONL file.
 
@@ -20,7 +20,7 @@ def evaluate_samples(
         problems_file: Optional path to problems file
 
     Returns:
-        Dictionary with pass@k metrics
+        Dictionary with results and metrics in standardized format
     """
     samples = read_jsonl(samples_path)
     results = []
@@ -34,11 +34,20 @@ def evaluate_samples(
         )
         results.append(result)
 
-    # Calculate pass@1 (only metric we support since we only evaluate one sample at a time)
+    # Calculate metrics
     passed = sum(1 for r in results if r.passed)
     total = len(results)
+    success_rate = passed / total if total > 0 else 0.0
 
-    return {"pass@1": passed / total if total > 0 else 0.0}
+    # Create standardized output format
+    return {
+        "results": results,
+        "report": {
+            "total_problems": total,
+            "total_success": passed,
+            "success_rate": success_rate,
+        },
+    }
 
 
 def main() -> None:
@@ -61,11 +70,12 @@ def main() -> None:
     )
 
     # Write detailed results
-    results_file = Path(str(samples_path) + "_results.jsonl")
+    results_file = Path(str(samples_path) + "_results.json")
     with open(results_file, "w") as f:
-        json.dump(results, f)
+        json.dump(results, f, indent=2)
 
-    print(results)
+    # Print success rate from the report
+    print(f"Success rate: {results['report']['success_rate']:.2%}")
 
 
 if __name__ == "__main__":

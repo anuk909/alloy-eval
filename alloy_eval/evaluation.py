@@ -59,7 +59,13 @@ def check_alloy_solution(
 
         if "UNSAT" in result.stderr:
             return True, None
-        return False, "Counterexample found"
+        if "Syntax error" in result.stderr:
+            return False, "Syntax Error"
+        if "Type error" in result.stderr:
+            return False, "Type Error"
+        if "SAT" in result.stderr:
+            return False, "Counterexample found"
+        return False, "Unknown error"
 
     except subprocess.TimeoutExpired:
         return False, "Timeout: Alloy check took too long"

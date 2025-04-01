@@ -161,7 +161,7 @@ class OpenAITester:
                 indent=2,
             )
 
-        # Generate report
+        # Generate report for console output
         generate_report(
             title="Alloy OpenAI Generation Report",
             model=self.client.model,
@@ -179,18 +179,28 @@ class OpenAITester:
             # Convert EvaluationResult to dictionary
             results.append(result.model_dump())
 
-        # Save results
+        # Calculate metrics for the report
+        total = len(results)
+        successful = sum(1 for r in results if r.get("passed"))
+        success_rate = f"{successful/total*100:.2f}%"
+
+        # Save results with standardized format
         with open(output_file, "w") as f:
             json.dump(
                 {
                     "model": self.client.model,
                     "results": results,
+                    "report": {
+                        "total_problems": total,
+                        "total_success": successful,
+                        "success_rate": success_rate,
+                    },
                 },
                 f,
                 indent=2,
             )
 
-        # Generate report
+        # Generate report for console output
         generate_report(
             title="Alloy OpenAI Testing Report",
             model=self.client.model,
