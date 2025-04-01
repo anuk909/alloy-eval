@@ -40,7 +40,7 @@ eval_alloy_openai \
     --model gpt-4o-mini \
     --temperature 0.2 \
     --debug-dir debug_files \
-    --output results.jsonl
+    --output results.json
 ```
 
 For more control, you can use the Python API:
