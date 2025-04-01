@@ -63,7 +63,7 @@ class OpenAITester:
 
         Please complete this predicate implementation:
         ```alloy
-        {problem.predicate_signature}
+        {problem.predicate_definition}
         ```           
 
         Output only the inner implemenation of the predicate in the required format for AlloyPred.          
