@@ -4,11 +4,12 @@ import argparse
 import os
 
 
-def extract_comment(alloy_content, position, look_inline=False):
+def extract_comment(pred_name, alloy_content, position, look_inline):
     """
     Extract relevant comments for a predicate.
 
     Args:
+        pred_name: The name of the predicate
         alloy_content: The full Alloy file content
         position: The starting position of the predicate
         look_inline: Whether to look for inline comments within the predicate body
@@ -17,17 +18,20 @@ def extract_comment(alloy_content, position, look_inline=False):
         The extracted comment text or None if no comment found
     """
     # Look at content before the position
-    preceding_content = alloy_content[:position].strip()
+    preceding_content = alloy_content[:position]
+    has_empty_line_before = preceding_content.endswith("\n\n")
+    preceding_content = preceding_content.strip()
 
-    # Try to find multi-line comment
-    comment = _find_multiline_comment(preceding_content)
-    if comment:
-        return comment
+    if not has_empty_line_before:
+        # Try to find multi-line comment
+        comment = _find_multiline_comment(preceding_content)
+        if comment:
+            return comment
 
-    # Try to find single-line comment
-    comment = _find_singleline_comment(preceding_content)
-    if comment:
-        return comment
+        # Try to find single-line comment
+        comment = _find_singleline_comment(preceding_content)
+        if comment:
+            return comment
 
     # If requested and no comment found yet, look for inline comment
     if look_inline and position < len(alloy_content):
@@ -48,7 +52,7 @@ def extract_comment(alloy_content, position, look_inline=False):
                         return match.group(1).strip()
                     break
 
-    return None
+    raise Exception(f"Couldn't find any comment for {pred_name}")
 
 
 def _find_multiline_comment(text):
@@ -125,14 +129,14 @@ def extract_predicates(alloy_content):
         pred_start_pos = match.start()
 
         # Extract the comment for this predicate
-        comment = extract_comment(alloy_content, pred_start_pos, look_inline=True)
+        comment = extract_comment(pred_name, alloy_content, pred_start_pos, look_inline=True)
 
         # Remove comments from the predicate body
         clean_body = remove_comments(pred_body).strip()
 
         predicates[pred_name] = {
             "body": clean_body,
-            "signature": f"pred {pred_name} {{\n",
+            "definition": f"pred {pred_name} {{\n",
             "description": comment,
             "position": pred_start_pos,
         }
@@ -184,7 +188,7 @@ def create_jsonl_entries(predicates, signatures, domain_name=""):
             "task_id": task_id,
             "prompt": prompt,
             "signatures": all_signatures,
-            "predicate_signature": pred_info["signature"],
+            "predicate_definition": pred_info["definition"],
             "canonical_solution": canonical_solution,
             "check": pred_info.get("check", ""),
         }
