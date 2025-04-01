@@ -1,4 +1,4 @@
-/* Problem: inv10 */
+/* Problem: inv6 */
 
 sig Workstation {
 	workers : set Worker,
@@ -17,12 +17,12 @@ sig Component extends Product {
 sig Dangerous in Product {}
 
 /* 
-The parts of a component must be assembled before it in the production line
+Components cannot be their own parts
 */
-pred inv10 {
-	all c: Component | all p: c.parts | some w: c.workstation | p in w.succ.parts
+pred inv6 {
+	all p : Component | p in p.parts => false
 }
 
-check inv10 {
-    inv10 iff (all c: Component | all p: c.parts & Component | some (c.workstation & p.workstation.^succ))
+check inv6 {
+    inv6 iff (all c: Component | c not in c.^parts)
 } for 4

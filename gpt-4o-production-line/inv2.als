@@ -20,7 +20,7 @@ sig Dangerous in Product {}
 Every workstation has workers and every worker works in one workstation
 */
 pred inv2 {
-	all w: Workstation | all wr: Worker | wr in w.workers implies one w' : Workstation | wr in w'.workers
+	all w: Workstation | all wr: Worker | wr in w.workers implies one w
 }
 
 check inv2 {

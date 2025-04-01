@@ -1,6 +1,8 @@
-/* Problem: graph/noLoops */
+/* Problem: noLoops */
 
-sig Node {adj : set Node}
+sig Node {
+	adj : set Node
+}
 
 /* 
 The graph contains no loops, ie, nodes have no transitions to themselves.

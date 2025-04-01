@@ -1,13 +1,15 @@
-/* Problem: graph/undirected */
+/* Problem: undirected */
 
-sig Node {adj : set Node}
+sig Node {
+	adj : set Node
+}
 
 /* 
 The graph is undirected, ie, edges are symmetric.
 http://mathworld.wolfram.com/UndirectedGraph.html
 */
 pred undirected {
-	all n, m: Node | n in m.adj iff m in n.adj
+	all n: Node | all m: n.adj | n in m.adj
 }
 
 check undirected {

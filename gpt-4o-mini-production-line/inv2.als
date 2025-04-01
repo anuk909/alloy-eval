@@ -1,4 +1,4 @@
-/* Problem: inv10 */
+/* Problem: inv2 */
 
 sig Workstation {
 	workers : set Worker,
@@ -17,12 +17,12 @@ sig Component extends Product {
 sig Dangerous in Product {}
 
 /* 
-The parts of a component must be assembled before it in the production line
+Every workstation has workers and every worker works in one workstation
 */
-pred inv10 {
-	all c: Component | all p: c.parts | some w: c.workstation | p in w.succ.parts
+pred inv2 {
+	all w: Workstation | w.workers = w.workers.worker \"works in\" w
 }
 
-check inv10 {
-    inv10 iff (all c: Component | all p: c.parts & Component | some (c.workstation & p.workstation.^succ))
+check inv2 {
+    inv2 iff (all w: Workstation | #w.workers > 0 and all wk: Worker | #(wk.~workers) = 1)
 } for 4

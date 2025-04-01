@@ -1,6 +1,8 @@
-/* Problem: graph/transitive */
+/* Problem: transitive */
 
-sig Node {adj : set Node}
+sig Node {
+	adj : set Node
+}
 
 /* 
 The graph is transitive, ie, if two nodes are connected through a third node, they also are connected directly.

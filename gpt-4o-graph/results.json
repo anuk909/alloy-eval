@@ -1,0 +1,74 @@
+{
+  "model": "gpt-4o",
+  "results": [
+    {
+      "task_id": "undirected",
+      "passed": true,
+      "solution": "all n: Node | all m: n.adj | n in m.adj",
+      "details": "",
+      "error_message": null,
+      "debug_file": "gpt-4o-graph/undirected.als"
+    },
+    {
+      "task_id": "oriented",
+      "passed": true,
+      "solution": "all n: Node | no (n.adj & n.~adj)",
+      "details": "",
+      "error_message": null,
+      "debug_file": "gpt-4o-graph/oriented.als"
+    },
+    {
+      "task_id": "acyclic",
+      "passed": true,
+      "solution": "all n: Node | n !in n.^adj",
+      "details": "",
+      "error_message": null,
+      "debug_file": "gpt-4o-graph/acyclic.als"
+    },
+    {
+      "task_id": "complete",
+      "passed": true,
+      "solution": "all n: Node | n.adj = Node - n",
+      "details": "",
+      "error_message": null,
+      "debug_file": "gpt-4o-graph/complete.als"
+    },
+    {
+      "task_id": "noLoops",
+      "passed": true,
+      "solution": "all n: Node | n not in n.adj",
+      "details": "",
+      "error_message": null,
+      "debug_file": "gpt-4o-graph/noLoops.als"
+    },
+    {
+      "task_id": "weaklyConnected",
+      "passed": true,
+      "solution": "all n1, n2: Node | n1 in n2.*(adj + ~adj)",
+      "details": "",
+      "error_message": null,
+      "debug_file": "gpt-4o-graph/weaklyConnected.als"
+    },
+    {
+      "task_id": "stronglyConnected",
+      "passed": false,
+      "solution": "all n1, n2: Node | n1 in n2.^adj",
+      "details": "",
+      "error_message": "Counterexample found",
+      "debug_file": "gpt-4o-graph/stronglyConnected.als"
+    },
+    {
+      "task_id": "transitive",
+      "passed": true,
+      "solution": "all n1, n2, n3: Node | (n1 in n2.adj and n2 in n3.adj) implies n1 in n3.adj",
+      "details": "",
+      "error_message": null,
+      "debug_file": "gpt-4o-graph/transitive.als"
+    }
+  ],
+  "report": {
+    "total_problems": 8,
+    "total_success": 7,
+    "success_rate": "87.50%"
+  }
+}

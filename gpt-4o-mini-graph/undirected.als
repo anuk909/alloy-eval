@@ -1,6 +1,8 @@
-/* Problem: graph/undirected */
+/* Problem: undirected */
 
-sig Node {adj : set Node}
+sig Node {
+	adj : set Node
+}
 
 /* 
 The graph is undirected, ie, edges are symmetric.

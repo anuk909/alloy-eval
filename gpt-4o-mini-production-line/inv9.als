@@ -1,4 +1,4 @@
-/* Problem: inv10 */
+/* Problem: inv9 */
 
 sig Workstation {
 	workers : set Worker,
@@ -17,12 +17,12 @@ sig Component extends Product {
 sig Dangerous in Product {}
 
 /* 
-The parts of a component must be assembled before it in the production line
+The workstations form a single line between begin and end
 */
-pred inv10 {
-	all c: Component | all p: c.parts | some w: c.workstation | p in w.succ.parts
+pred inv9 {
+	begin.succ = end and all w : Workstation | w in begin.succ.*succ
 }
 
-check inv10 {
-    inv10 iff (all c: Component | all p: c.parts & Component | some (c.workstation & p.workstation.^succ))
+check inv9 {
+    inv9 iff (no succ.begin and no end.succ and all w: Workstation - end | one w.succ and all w: Workstation - begin | one succ.w and Workstation = begin.*succ)
 } for 4

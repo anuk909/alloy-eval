@@ -1,13 +1,15 @@
-/* Problem: graph/weaklyConnected */
+/* Problem: weaklyConnected */
 
-sig Node {adj : set Node}
+sig Node {
+	adj : set Node
+}
 
 /* 
 The graph is weakly connected, ie, it is possible to reach every node from every node ignoring edge direction.
 http://mathworld.wolfram.com/WeaklyConnectedDigraph.html
 */
 pred weaklyConnected {
-	let reachable = {n: Node | some path: Node -> Node | path in n.adj} | all n: Node | reachable in n.adj
+	all n1, n2: Node | n1 in n2.*(adj + ~adj)
 }
 
 check weaklyConnected {

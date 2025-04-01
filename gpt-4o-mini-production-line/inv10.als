@@ -20,7 +20,7 @@ sig Dangerous in Product {}
 The parts of a component must be assembled before it in the production line
 */
 pred inv10 {
-	all c: Component | all p: c.parts | some w: c.workstation | p in w.succ.parts
+	all p : Component | all w : p.workstation | all s : w.succ | some p.parts | all part : p.parts | part in s.parts
 }
 
 check inv10 {

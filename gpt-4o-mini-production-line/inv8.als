@@ -1,4 +1,4 @@
-/* Problem: inv10 */
+/* Problem: inv8 */
 
 sig Workstation {
 	workers : set Worker,
@@ -17,12 +17,12 @@ sig Component extends Product {
 sig Dangerous in Product {}
 
 /* 
-The parts of a component must be assembled before it in the production line
+Dangerous components cannot be assembled by humans
 */
-pred inv10 {
-	all c: Component | all p: c.parts | some w: c.workstation | p in w.succ.parts
+pred inv8 {
+	all w : Workstation | w.workers in Human implies no c : Component | c in Dangerous && c.workstation = w
 }
 
-check inv10 {
-    inv10 iff (all c: Component | all p: c.parts & Component | some (c.workstation & p.workstation.^succ))
+check inv8 {
+    inv8 iff (Dangerous.workstation.workers in Robot)
 } for 4

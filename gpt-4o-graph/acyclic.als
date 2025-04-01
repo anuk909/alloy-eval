@@ -1,13 +1,15 @@
-/* Problem: graph/acyclic */
+/* Problem: acyclic */
 
-sig Node {adj : set Node}
+sig Node {
+	adj : set Node
+}
 
 /* 
 The graph is acyclic, ie, contains no directed cycles.
 http://mathworld.wolfram.com/AcyclicDigraph.html
 */
 pred acyclic {
-	all n: Node | no n.adj & (n in n.adj)
+	all n: Node | n !in n.^adj
 }
 
 check acyclic {

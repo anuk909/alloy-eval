@@ -1,4 +1,4 @@
-/* Problem: inv10 */
+/* Problem: inv4 */
 
 sig Workstation {
 	workers : set Worker,
@@ -17,12 +17,12 @@ sig Component extends Product {
 sig Dangerous in Product {}
 
 /* 
-The parts of a component must be assembled before it in the production line
+Components must have parts and materials have no parts
 */
-pred inv10 {
-	all c: Component | all p: c.parts | some w: c.workstation | p in w.succ.parts
+pred inv4 {
+	all p : Product | (p in Component implies p.parts != none) and (p in Material implies p.parts = none)
 }
 
-check inv10 {
-    inv10 iff (all c: Component | all p: c.parts & Component | some (c.workstation & p.workstation.^succ))
+check inv4 {
+    inv4 iff (all c: Component | #c.parts > 0 and all m: Material | #m.parts = 0)
 } for 4

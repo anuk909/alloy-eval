@@ -17,10 +17,10 @@ sig Component extends Product {
 sig Dangerous in Product {}
 
 /* 
-when specifying each property you can assume all the previous ones to be true.
+Workers are either human or robots
 */
 pred inv1 {
-	all w: Workstation | some w.workers implies some w.succ
+	all w: Worker | w in Human + Robot
 }
 
 check inv1 {

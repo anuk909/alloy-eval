@@ -20,7 +20,7 @@ sig Dangerous in Product {}
 Dangerous components cannot be assembled by humans
 */
 pred inv8 {
-	all c: Component | c in Dangerous implies no c.workstation.workers & Human
+	all c: Component | c in Dangerous => no c.workstation.workers & Human
 }
 
 check inv8 {

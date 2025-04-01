@@ -1,1 +1,1 @@
-eval_alloy_openai --model gpt-4o --problems data/production_line_problems.jsonl --debug-dir gpt-4o-mini-production-line/ --output gpt-4o-mini-production-line/results.txt
+eval_alloy_openai --model gpt-4o --problems data/production_line_problems.jsonl --debug-dir gpt-4o-production-line/ --output gpt-4o-production-line/results.json
