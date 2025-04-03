@@ -101,24 +101,33 @@ Each problem in AlloyEval follows this structure:
 
 ## Results Format
 
-The evaluation results have the following structure:
+The evaluation results are structured in JSON format as follows:
 
-```python
+```json
 {
-    "task_id": "problem identifier",
-    "passed": true/false,
-    "error_message": "error message if failed",
-    "debug_file": "path to debug .als file (if debugging enabled)"
+  "results": [
+    {
+      "task_id": "problem_identifier",
+      "passed": true,
+      "details": "additional details",
+      "error_message": "error message if failed",
+      "debug_file": "path to debug .als file"
+    }
+  ],
+  "report": {
+    "total_problems": 8,
+    "total_success": 7,
+    "success_rate": "87.50%"
+  }
 }
 ```
 
-For OpenAI testing, results also include:
+Additionally, the OpenAI CLI results include the following keys:
 
-```python
-{
-    "solution": "generated solution",
-}
-```
+- **solution**: The generated solution for each individual result.
+- **model**: A global key indicating the model used for generating all solutions.
+
+This format provides a clear overview of the evaluation results, making it easy to understand the outcomes of the Alloy problem evaluations.
 
 ## Debugging
 

@@ -37,7 +37,7 @@ def evaluate_samples(
     # Calculate metrics
     passed = sum(1 for r in results if r.passed)
     total = len(results)
-    success_rate = passed / total if total > 0 else 0.0
+    success_rate = f"{passed/total*100:.2f}%"
 
     # Create standardized output format
     return {
