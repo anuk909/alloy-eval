@@ -1,0 +1,1 @@
+eval_alloy_openai --model gpt-4o --problems data/trash_problems.jsonl --debug-dir gpt-4o-trash/ --output gpt-4o-trash/results.json

@@ -1,0 +1,1 @@
+eval_alloy_openai --model gpt-4o --problems data/social_network_problems.jsonl --debug-dir gpt-4o-social_network/ --output gpt-4o-social_network/results.json

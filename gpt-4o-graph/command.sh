@@ -1,1 +1,1 @@
-eval_alloy_openai --model gpt-4o --problems data/graph_problems.jsonl --debug-dir gpt-4o-graph/ --output gpt-4o-graph/results.jso
+eval_alloy_openai --model gpt-4o --problems data/graph_problems.jsonl --debug-dir gpt-4o-graph/ --output gpt-4o-graph/results.json
