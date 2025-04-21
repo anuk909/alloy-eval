@@ -6,7 +6,10 @@ from alloy_eval.data_utils import read_problems
 
 
 def create_alloy_file(
-    problem: AlloyProblem, solution: str, debug_dir: Path | None = None
+    problem: AlloyProblem,
+    solution: str,
+    debug_dir: Path | None = None,
+    task_id: str | None = None,
 ) -> tuple[str, str | None]:
     """
     Create an Alloy file with the problem and solution.
@@ -15,6 +18,7 @@ def create_alloy_file(
         problem: The Alloy problem
         solution: The solution to test
         debug_dir: Optional directory to save debug files
+        task_id: Optional task ID to use for debug files (overrides problem.task_id)
 
     Returns:
         Tuple of (temp file path, debug file path or None)
@@ -41,7 +45,9 @@ def create_alloy_file(
     # If debug directory provided, create a permanent copy
     debug_file = None
     if debug_dir:
-        clean_name = problem.task_id.replace("/", "_")
+        # Use provided task_id if available, otherwise use problem.task_id
+        file_task_id = task_id if task_id is not None else problem.task_id
+        clean_name = file_task_id.replace("/", "_")
         debug_file = debug_dir / f"{clean_name}.als"
         with open(debug_file, "w") as f:
             f.write(content)
@@ -78,10 +84,11 @@ def evaluate_single_problem(
     solution: str,
     alloy_path: str,
     debug_dir: str | Path | None = None,
+    task_id: str | None = None,
 ) -> EvaluationResult:
     """Evaluate a single Alloy problem with the provided solution."""
     # Create Alloy file
-    als_file, debug_file = create_alloy_file(problem, solution, debug_dir)
+    als_file, debug_file = create_alloy_file(problem, solution, debug_dir, task_id)
 
     # Run Alloy check
     passed, error = check_alloy_solution(als_file, alloy_path)

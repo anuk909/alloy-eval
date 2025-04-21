@@ -62,6 +62,12 @@ def main() -> None:
         type=str,
         help="Directory to save debug files",
     )
+    parser.add_argument(
+        "--num-solutions",
+        type=int,
+        default=1,
+        help="Number of different solutions to generate for each problem",
+    )
 
     args = parser.parse_args()
 
@@ -72,6 +78,7 @@ def main() -> None:
         alloy_path=args.alloy_path,
         temperature=args.temperature,
         debug_dir=args.debug_dir,
+        num_solutions=args.num_solutions,
     )
 
     # Run in specified mode

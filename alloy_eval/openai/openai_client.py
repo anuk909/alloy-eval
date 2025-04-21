@@ -9,12 +9,13 @@ load_dotenv()
 
 
 class OpenAIClient:
-    def __init__(self, model: str, temperature: float):
+    def __init__(self, model: str, temperature: float, max_tokens: int = 512):
         self.client = OpenAI(
             api_key=os.getenv("OPENAI_API_KEY", ""),
         )
         self.model = model
         self.temperature = temperature
+        self.max_tokens = max_tokens
 
     def query(self, prompt: str) -> str | None:
         """Query OpenAI API with structured response."""
@@ -29,7 +30,7 @@ class OpenAIClient:
                     {"role": "user", "content": prompt},
                 ],
                 temperature=self.temperature,
-                max_tokens=512,
+                max_tokens=self.max_tokens,
                 response_format=AlloyPred,
             )
             return response.choices[0].message.parsed.content
