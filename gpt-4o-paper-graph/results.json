@@ -1,0 +1,34 @@
+{
+  "model": "gpt-4o",
+  "results": [
+    {
+      "task_id": "DAG",
+      "passed": true,
+      "solution": "all n: Node | n !in n.^link",
+      "details": "",
+      "error_message": null,
+      "debug_file": "gpt-4o-paper-graph/DAG.als"
+    },
+    {
+      "task_id": "Cycle",
+      "passed": true,
+      "solution": "some n: Node | n in n.^link",
+      "details": "",
+      "error_message": null,
+      "debug_file": "gpt-4o-paper-graph/Cycle.als"
+    },
+    {
+      "task_id": "Circular",
+      "passed": false,
+      "solution": "all n: Node | #Node = #Edge and #Node = #n.*link and all n: Node | n in n.^link",
+      "details": "",
+      "error_message": "Syntax Error",
+      "debug_file": "gpt-4o-paper-graph/Circular.als"
+    }
+  ],
+  "report": {
+    "total_problems": 3,
+    "total_success": 2,
+    "success_rate": "66.67%"
+  }
+}
