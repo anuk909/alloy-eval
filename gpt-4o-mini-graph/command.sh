@@ -1,0 +1,1 @@
+eval_alloy_openai --model gpt-4o-mini --problems data/graph_problems.jsonl --debug-dir gpt-4o-mini-graph/ --output gpt-4o-mini-graph/results.json
