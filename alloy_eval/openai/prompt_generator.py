@@ -39,7 +39,7 @@ class PromptGenerator:
             {problem.predicate_definition}
             ```           
 
-            Output only the inner implemenation of the predicate in the required format for AlloyPred.          
+            Output only the inner implementation of the predicate in the required format for AlloyPred.          
             """
         else:
             prompt = f"""
@@ -57,7 +57,7 @@ class PromptGenerator:
             {problem.predicate_definition}
             ```           
 
-            Output only the inner implemenation of the predicate in the required format for AlloyPred.
+            Output only the inner implementation of the predicate in the required format for AlloyPred.
             
             IMPORTANT: Provide exactly {self.num_solutions} different solutions, separated by blank lines. Each solution should be a complete implementation of the predicate body.
             """

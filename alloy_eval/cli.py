@@ -28,7 +28,6 @@ def evaluate_samples(
     for sample in samples:
         result = evaluate_functional_correctness(
             solution=sample["completion"],
-            problem_id=sample["task_id"],
             alloy_path=alloy_path,
             problems_file=problems_file,
         )

@@ -42,9 +42,8 @@ def setup_debug_dir(debug_dir: str | Path | None) -> Path | None:
         return None
 
     debug_path = Path(debug_dir)
-    debug_path.mkdir(parents=True, exist_ok=True)
     # Clean any existing files
     if debug_path.exists():
         shutil.rmtree(debug_path)
-    debug_path.mkdir(parents=True)
+    debug_path.mkdir(parents=True, exist_ok=True)
     return debug_path

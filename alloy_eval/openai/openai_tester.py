@@ -204,8 +204,8 @@ class OpenAITester:
 
         for problem in track(self.problems, description="Testing problems"):
             results = self.test_problem(problem)
-            # Convert EvaluationResult to dictionary using dict() instead of model_dump()
-            result_dicts = [dict(r) for r in results]
+            # Convert EvaluationResult to dictionary using model_dump()
+            result_dicts = [r.model_dump() for r in results]
             all_results.extend(result_dicts)
 
             # Count successful solutions
