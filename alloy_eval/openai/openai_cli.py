@@ -3,8 +3,8 @@ from enum import Enum
 
 from alloy_eval.openai.openai_tester import OpenAITester
 from alloy_eval.openai.multi_solution_tester import (
-    SinglePromptMultiSolutionTester,
-    MultiplePromptMultiSolutionTester,
+    SingleQueryMultiSolutionsTester,
+    MultiQueriesMultiSolutionsTester,
 )
 
 
@@ -21,18 +21,8 @@ class Mode(Enum):
 class GenerationStrategy(Enum):
     """Strategy for generating multiple solutions."""
 
-    SINGLE_PROMPT = "single"  # Generate all solutions in a single prompt
-    MULTIPLE_PROMPTS = "multiple"  # Generate solutions using multiple prompts
-
-    def __str__(self) -> str:
-        return self.value
-
-
-class GenerationStrategy(Enum):
-    """Strategy for generating multiple solutions."""
-
-    SINGLE_PROMPT = "single"  # Generate all solutions in a single prompt
-    MULTIPLE_PROMPTS = "multiple"  # Generate solutions using multiple prompts
+    SINGLE_QUERY = "single"  # Generate all solutions in a single query
+    MULTIPLE_QUERIES = "multiple"  # Generate solutions using multiple queries
 
     def __str__(self) -> str:
         return self.value
@@ -51,10 +41,10 @@ def get_tester_class(strategy: GenerationStrategy, total_solutions: int):
     """
     if total_solutions == 1:
         return OpenAITester
-    elif strategy == GenerationStrategy.SINGLE_PROMPT:
-        return SinglePromptMultiSolutionTester
+    elif strategy == GenerationStrategy.SINGLE_QUERY:
+        return SingleQueryMultiSolutionsTester
     else:
-        return MultiplePromptMultiSolutionTester
+        return MultiQueriesMultiSolutionsTester
 
 
 def main() -> None:
@@ -121,8 +111,8 @@ def main() -> None:
         "--generation-strategy",
         type=GenerationStrategy,
         choices=list(GenerationStrategy),
-        default=GenerationStrategy.SINGLE_PROMPT,
-        help="Strategy for generating multiple solutions: single (all in one prompt) or multiple (separate prompts)",
+        default=GenerationStrategy.SINGLE_QUERY,
+        help="Strategy for generating multiple solutions: single (all in one query) or multiple (separate queries)",
     )
     solution_group.add_argument(
         "--k-values",

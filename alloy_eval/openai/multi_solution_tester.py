@@ -17,8 +17,8 @@ from rich.progress import track
 class GenerationStrategy(Enum):
     """Strategy for generating multiple solutions."""
 
-    SINGLE_PROMPT = "single"  # Generate all solutions in a single prompt
-    MULTIPLE_PROMPTS = "multiple"  # Generate solutions using multiple prompts
+    SINGLE_QUERY = "single"  # Generate all solutions in a single query
+    MULTIPLE_QUERIES = "multiple"  # Generate solutions using multiple queries
 
     def __str__(self) -> str:
         return self.value
@@ -56,7 +56,6 @@ class MultiSolutionTester(OpenAITester):
         self.client.max_tokens = max_tokens
 
         # Initialize components for multiple solutions
-        self.prompt_generator = PromptGenerator(total_solutions)
         self.solution_processor = SolutionProcessor(total_solutions)
 
     def _generate_solutions(self, problem: AlloyProblem) -> list[str | None]:
@@ -213,6 +212,8 @@ class MultiSolutionTester(OpenAITester):
         all_pass_at_k = defaultdict(list)
 
         for problem in track(self.problems, description="Testing problems"):
+            task_id = problem.task_id
+            console.print(f"\n[blue]Testing: {task_id}[/blue]")
             results, problem_successful, pass_at_k = self._evaluate_solutions(problem)
             all_results.extend(results)
             total_successful += problem_successful
@@ -251,18 +252,20 @@ class MultiSolutionTester(OpenAITester):
         )
 
 
-class SinglePromptMultiSolutionTester(MultiSolutionTester):
+class SingleQueryMultiSolutionsTester(MultiSolutionTester):
     """
-    Generates multiple solutions in a single prompt.
+    Generates multiple solutions in a single query to the language model.
+    This is more efficient but may be limited by token constraints.
     """
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        """Initialize the single-prompt multi-solution tester."""
+        """Initialize the single-query multi-solution tester."""
         super().__init__(*args, **kwargs)
+        self.prompt_generator = PromptGenerator(self.total_solutions)
 
     def _generate_solutions(self, problem: AlloyProblem) -> list[str | None]:
         """
-        Generate all solutions in a single prompt.
+        Generate all solutions in a single query.
 
         Args:
             problem: The Alloy problem to generate solutions for
@@ -275,18 +278,20 @@ class SinglePromptMultiSolutionTester(MultiSolutionTester):
         return self.solution_processor.process_solutions(problem.task_id, response)
 
 
-class MultiplePromptMultiSolutionTester(MultiSolutionTester):
+class MultiQueriesMultiSolutionsTester(MultiSolutionTester):
     """
-    Generates multiple solutions using multiple prompts.
+    Generates multiple solutions using multiple queries to the language model.
+    This is less efficient but avoids token constraints by generating one solution per query.
     """
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        """Initialize the multiple-prompt multi-solution tester."""
+        """Initialize the multiple-queries multi-solution tester."""
         super().__init__(*args, **kwargs)
+        self.prompt_generator = PromptGenerator(num_solutions=1)
 
     def _generate_solutions(self, problem: AlloyProblem) -> list[str | None]:
         """
-        Generate solutions using multiple prompts.
+        Generate solutions using multiple queries, one per solution.
 
         Args:
             problem: The Alloy problem to generate solutions for
@@ -294,26 +299,4 @@ class MultiplePromptMultiSolutionTester(MultiSolutionTester):
         Returns:
             List of generated solutions
         """
-        all_solutions = []
-        solutions_per_prompt = min(
-            3, self.total_solutions
-        )  # Limit solutions per prompt
-        num_prompts = (
-            self.total_solutions + solutions_per_prompt - 1
-        ) // solutions_per_prompt
-
-        for prompt_num in range(num_prompts):
-            if num_prompts > 1:
-                console.print(f"  Prompt {prompt_num + 1}/{num_prompts}")
-
-            prompt = self.prompt_generator.create_prompt(problem)
-            response = self.query_openai(prompt)
-            solutions = self.solution_processor.process_solutions(
-                problem.task_id, response
-            )
-
-            # Only take the solutions we need
-            remaining = self.total_solutions - len(all_solutions)
-            all_solutions.extend(solutions[:remaining])
-
-        return all_solutions
+        return [self._generate_solution(problem) for _ in range(self.total_solutions)]
