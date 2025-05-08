@@ -2,6 +2,10 @@ import argparse
 from enum import Enum
 
 from alloy_eval.openai.openai_tester import OpenAITester
+from alloy_eval.openai.multi_solution_tester import (
+    SingleQueryMultiSolutionsTester,
+    MultiQueriesMultiSolutionsTester,
+)
 
 
 class Mode(Enum):
@@ -14,18 +18,50 @@ class Mode(Enum):
         return self.value
 
 
+class GenerationStrategy(Enum):
+    """Strategy for generating multiple solutions."""
+
+    SINGLE_QUERY = "single"  # Generate all solutions in a single query
+    MULTIPLE_QUERIES = "multiple"  # Generate solutions using multiple queries
+
+    def __str__(self) -> str:
+        return self.value
+
+
+def get_tester_class(strategy: GenerationStrategy, total_solutions: int):
+    """
+    Get the appropriate tester class based on the generation strategy.
+
+    Args:
+        strategy: The generation strategy to use
+        total_solutions: Total number of solutions to generate
+
+    Returns:
+        The appropriate tester class
+    """
+    if total_solutions == 1:
+        return OpenAITester
+    elif strategy == GenerationStrategy.SINGLE_QUERY:
+        return SingleQueryMultiSolutionsTester
+    else:
+        return MultiQueriesMultiSolutionsTester
+
+
 def main() -> None:
     """Run the OpenAI tester CLI."""
     parser = argparse.ArgumentParser(
         description="Test Alloy specifications using OpenAI models."
     )
 
+    # Required arguments
     parser.add_argument(
         "--problems",
         type=str,
         required=True,
         help="Path to JSONL file containing problems",
     )
+
+    # Optional arguments
     parser.add_argument(
         "--output",
         type=str,
@@ -62,24 +98,54 @@ def main() -> None:
         type=str,
         help="Directory to save debug files",
     )
-    parser.add_argument(
-        "--num-solutions",
+
+    # Solution generation arguments
+    solution_group = parser.add_argument_group("Solution Generation")
+    solution_group.add_argument(
+        "--total-solutions",
         type=int,
         default=1,
-        help="Number of different solutions to generate for each problem",
+        help="Total number of solutions to generate per problem",
+    )
+    solution_group.add_argument(
+        "--generation-strategy",
+        type=GenerationStrategy,
+        choices=list(GenerationStrategy),
+        default=GenerationStrategy.SINGLE_QUERY,
+        help="Strategy for generating multiple solutions: single (all in one query) or multiple (separate queries)",
+    )
+    solution_group.add_argument(
+        "--k-values",
+        type=int,
+        nargs="+",
+        help="List of k values to calculate pass@k for. If not specified, only pass@1 is calculated.",
     )
 
     args = parser.parse_args()
 
+    # Get the appropriate tester class
+    tester_class = get_tester_class(args.generation_strategy, args.total_solutions)
+
+    # Initialize tester with common arguments
+    common_args = {
+        "problems_file": args.problems,
+        "model": args.model,
+        "alloy_path": args.alloy_path,
+        "temperature": args.temperature,
+        "debug_dir": args.debug_dir,
+    }
+
+    # Add multi-solution specific arguments only if needed
+    if args.total_solutions > 1:
+        common_args.update(
+            {
+                "total_solutions": args.total_solutions,
+                "k_values": args.k_values,
+            }
+        )
+
     # Initialize tester
-    tester = OpenAITester(
-        problems_file=args.problems,
-        model=args.model,
-        alloy_path=args.alloy_path,
-        temperature=args.temperature,
-        debug_dir=args.debug_dir,
-        num_solutions=args.num_solutions,
-    )
+    tester = tester_class(**common_args)
 
     # Run in specified mode
     if args.mode == Mode.EVALUATE:
