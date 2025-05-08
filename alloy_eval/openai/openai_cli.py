@@ -68,6 +68,12 @@ def main() -> None:
         default=1,
         help="Number of different solutions to generate for each problem",
     )
+    parser.add_argument(
+        "--k-values",
+        type=int,
+        nargs="+",
+        help="List of k values to calculate pass@k for. If not specified, only pass@1 is calculated.",
+    )
 
     args = parser.parse_args()
 
@@ -79,6 +85,7 @@ def main() -> None:
         temperature=args.temperature,
         debug_dir=args.debug_dir,
         num_solutions=args.num_solutions,
+        k_values=args.k_values,
     )
 
     # Run in specified mode

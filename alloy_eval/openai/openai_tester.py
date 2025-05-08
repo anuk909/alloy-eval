@@ -1,6 +1,8 @@
-import json
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
+from collections import defaultdict
+import numpy as np
+import itertools
 
 from alloy_eval.data_utils import read_problems
 from alloy_eval.evaluation import evaluate_single_problem
@@ -33,6 +35,7 @@ class OpenAITester:
         temperature: float,
         debug_dir: str | Path | None = None,
         num_solutions: int = 1,
+        k_values: list[int] | None = None,
     ) -> None:
         """
         Initialize the tester.
@@ -44,11 +47,13 @@ class OpenAITester:
             temperature: OpenAI temperature parameter
             debug_dir: Directory to save debug files (None to disable)
             num_solutions: Number of different solutions to generate for each problem
+            k_values: List of k values to compute pass@k for. If None, computes for k=1.
         """
         self.problems = read_problems(problems_file)
         self.alloy_path = alloy_path
         self.debug_dir = setup_debug_dir(debug_dir)
         self.num_solutions = num_solutions
+        self.k_values = k_values
 
         # Calculate max_tokens based on number of solutions
         # Each solution is roughly 100 tokens, plus some overhead
@@ -81,7 +86,7 @@ class OpenAITester:
             console.print(f"[red]Error querying OpenAI API: {e}[/red]")
             return None
 
-    def test_problem(self, problem: AlloyProblem) -> List[EvaluationResult]:
+    def test_problem(self, problem: AlloyProblem) -> list[EvaluationResult]:
         """
         Test a single problem with multiple solutions.
 
@@ -133,7 +138,7 @@ class OpenAITester:
 
         return results
 
-    def generate_solution(self, problem: AlloyProblem) -> List[Dict[str, Any]]:
+    def generate_solution(self, problem: AlloyProblem) -> list[dict[str, Any]]:
         """
         Generate multiple solutions for a problem without evaluation.
 
@@ -193,6 +198,79 @@ class OpenAITester:
             output_file, all_results, "Alloy OpenAI Generation Report"
         )
 
+    def estimate_pass_at_k(
+        self, num_samples: int | list[int], num_correct: list[int], k: int
+    ) -> np.ndarray:
+        """
+        Estimates pass@k for each problem.
+
+        Args:
+            num_samples: Number of samples per problem (int or list of ints)
+            num_correct: Number of correct solutions per problem (list of ints)
+            k: The k in pass@k
+
+        Returns:
+            NumPy array of pass@k estimates for each problem
+        """
+
+        def estimator(n: int, c: int, k: int) -> float:
+            """Calculates 1 - comb(n - c, k) / comb(n, k)."""
+            if n - c < k:
+                return 1.0
+            return 1.0 - np.prod(1.0 - k / np.arange(n - c + 1, n + 1))
+
+        if isinstance(num_samples, int):
+            num_samples_it = itertools.repeat(num_samples, len(num_correct))
+        else:
+            assert len(num_samples) == len(num_correct)
+            num_samples_it = iter(num_samples)
+
+        return np.array(
+            [estimator(int(n), int(c), k) for n, c in zip(num_samples_it, num_correct)]
+        )
+
+    def _compute_pass_at_k(
+        self, all_results: list[dict[str, Any]], k_values: list[int] | None = None
+    ) -> dict[str, float]:
+        """
+        Compute Pass@K using the custom estimate_pass_at_k function.
+
+        Args:
+            all_results: List of result dictionaries
+            k_values: List of k values to compute pass@k for. If None, computes for k=1.
+
+        Returns:
+            Dictionary with Pass@K values for each k
+        """
+        # Group results by base problem ID (removing _solN suffix)
+        problem_results = defaultdict(list)
+        for r in all_results:
+            base_id = r["task_id"].rsplit("_sol", 1)[0]
+            problem_results[base_id].append(r.get("passed", False))
+
+        # Calculate num_correct for each problem
+        num_samples = self.num_solutions
+        num_correct = [sum(passes) for passes in problem_results.values()]
+
+        # If no k values specified, default to k=1
+        if k_values is None:
+            k_values = [1]
+
+        # Calculate Pass@k for each k value
+        pass_at_k_dict = {}
+        for k in k_values:
+            if k > num_samples:
+                console.print(
+                    f"[yellow]Warning: k={k} is larger than number of samples ({num_samples}), skipping[/yellow]"
+                )
+                continue
+            pass_at_k = self.estimate_pass_at_k(
+                num_samples=num_samples, num_correct=num_correct, k=k
+            )
+            pass_at_k_dict[f"pass@{k}"] = float(pass_at_k.mean())
+
+        return pass_at_k_dict
+
     def run_tests(self, output_file: str | Path) -> None:
         """
         Run tests for all problems.
@@ -204,17 +282,34 @@ class OpenAITester:
 
         for problem in track(self.problems, description="Testing problems"):
             results = self.test_problem(problem)
-            # Convert EvaluationResult to dictionary using model_dump()
-            result_dicts = [r.model_dump() for r in results]
+            # Convert EvaluationResult to dictionary using model_dump() if needed
+            result_dicts = [
+                r.model_dump() if hasattr(r, "model_dump") else r for r in results
+            ]
             all_results.extend(result_dicts)
 
-            # Count successful solutions
-            problem_successful = sum(1 for r in result_dicts if r.get("passed", False))
+            # Count successful solutions for this problem
+            problem_successful = sum(1 for r in results if r.passed)
             console.print(
-                f"  Problem summary: {problem_successful}/{len(results)} solutions passed"
+                f"Problem summary: {problem_successful}/{len(results)} solutions passed"
             )
+
+            # Calculate Pass@K after each problem
+            pass_at_k = self._compute_pass_at_k(all_results, self.k_values)
+            # Display all pass@k values
+            for k, value in sorted(
+                pass_at_k.items(), key=lambda x: int(x[0].split("@")[1])
+            ):
+                console.print(f"[cyan]{k}: {value:.3f}[/cyan]")
+
+        # Final Pass@K calculation
+        pass_at_k = self._compute_pass_at_k(all_results, self.k_values)
 
         # Save results
         self.result_handler.save_results(
-            output_file, all_results, "Alloy OpenAI Testing Report", include_report=True
+            output_file,
+            all_results,
+            "Alloy OpenAI Testing Report",
+            include_report=True,
+            pass_at_k=pass_at_k,
         )
